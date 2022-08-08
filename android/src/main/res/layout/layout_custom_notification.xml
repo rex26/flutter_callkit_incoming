@@ -52,25 +52,27 @@
         android:orientation="horizontal">
 
 
+
         <LinearLayout
             android:id="@+id/llDecline"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/base_margin_x3_5"
             android:layout_marginRight="@dimen/base_margin_half"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button_decline"
+            android:background="@android:color/transparent"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="TouchTargetSizeCheck">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/base_margin"
                 android:src="@drawable/ic_decline"
-                android:tint="@android:color/white"
-                app:tint="@android:color/white"
+                android:tint="@android:color/holo_red_light"
+                app:tint="@android:color/holo_red_light"
                 tools:ignore="UseAppTint" />
 
             <TextView
@@ -81,29 +83,41 @@
                 android:gravity="center"
                 android:text="@string/text_decline"
                 android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/holo_red_light" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/expanded_menu"
+            android:layout_width="1dp"
+            android:layout_height="@dimen/base_margin_x3_5"
+            android:orientation="horizontal"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="center"
+            android:background="@android:color/darker_gray">
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/llAccept"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/base_margin_x3_5"
             android:layout_marginLeft="@dimen/base_margin_half"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button_accept"
+            android:background="@android:color/transparent"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="TouchTargetSizeCheck">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/base_margin"
                 android:src="@drawable/ic_accept"
-                android:tint="@android:color/white"
-                app:tint="@android:color/white"
+                android:tint="@android:color/holo_green_light"
+                app:tint="@android:color/holo_green_light"
                 tools:ignore="UseAppTint" />
 
             <TextView
@@ -114,10 +128,9 @@
                 android:gravity="center"
                 android:text="@string/text_accept"
                 android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/holo_green_light" />
 
         </LinearLayout>
-
 
     </LinearLayout>
 
