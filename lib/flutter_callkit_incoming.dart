@@ -13,6 +13,8 @@ class FlutterCallkitIncoming {
       const MethodChannel('flutter_callkit_incoming');
   static const EventChannel _eventChannel =
       const EventChannel('flutter_callkit_incoming_events');
+  static const EventChannel _specificEventChannel =
+      const EventChannel('flutter_callkit_specific_events');
 
   /// Listen to event callback from [FlutterCallkitIncoming].
   ///
@@ -33,6 +35,15 @@ class FlutterCallkitIncoming {
   /// }
   static Stream<CallEvent?> get onEvent =>
       _eventChannel.receiveBroadcastStream().map(_receiveCallEvent);
+
+  /// Listen to event callback from [FlutterCallkitIncoming].
+  ///
+  /// FlutterCallkitIncoming.onSpecificEvent.listen((event) {
+  /// CallEvent.ACTION_CALL_DECLINE - Declined an incoming call
+  /// CallEvent.ACTION_CALL_ENDED - Ended an incoming/outgoing call
+  /// }
+  static Stream<CallEvent?> get onSpecificEvent =>
+      _specificEventChannel.receiveBroadcastStream().map(_receiveCallEvent);
 
   /// Show Callkit Incoming.
   /// On iOS, using Callkit. On Android, using a custom UI.

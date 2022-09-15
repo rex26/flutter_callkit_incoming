@@ -25,17 +25,23 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
         @SuppressLint("StaticFieldLeak")
         private var instance: FlutterCallkitIncomingPlugin? = null
 
-        public fun getInstance(): FlutterCallkitIncomingPlugin  {
-            if(instance == null){
+        fun getInstance(): FlutterCallkitIncomingPlugin?  {
+            // 如果用new的方式无法得到里面的真实变量如：activity
+            /*if(instance == null){
                 instance = FlutterCallkitIncomingPlugin()
-            }
-            return instance!!
+            }*/
+            return instance
         }
 
         private val eventHandler = EventCallbackHandler()
+        private val specificEventHandler = EventCallbackHandler()
 
         fun sendEvent(event: String, body: Map<String, Any>) {
             eventHandler.send(event, body)
+        }
+
+        fun sendSpecificEvent(event: String, body: Map<String, Any>) {
+            specificEventHandler.send(event, body)
         }
 
         private fun sharePluginWithRegister(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, @Nullable handler: MethodCallHandler) {
@@ -63,6 +69,12 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
     private var channel: MethodChannel? = null
     private var events: EventChannel? = null
 
+    /***
+     * 增加一个channel专门处理特殊的场景(flutter_callkit_specific_events)：
+     * 1.flutter app被杀掉后，收到FCM消息，需要监听这个channel来处理挂断事件
+     */
+    private var specificEvents: EventChannel? = null
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         this.context = flutterPluginBinding.applicationContext
@@ -72,6 +84,9 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
         events =
             EventChannel(flutterPluginBinding.binaryMessenger, "flutter_callkit_incoming_events")
         events?.setStreamHandler(eventHandler)
+        specificEvents =
+            EventChannel(flutterPluginBinding.binaryMessenger, "flutter_callkit_specific_events")
+        specificEvents?.setStreamHandler(specificEventHandler)
  //       sharePluginWithRegister(flutterPluginBinding, this)
     }
 
@@ -199,25 +214,43 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        AppUtils.logger("onDetachedFromEngine()")
         channel?.setMethodCallHandler(null)
     }
 
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        instance = this
+        AppUtils.logger("onAttachedToActivity()")
         this.activity = binding.activity
         this.context = binding.activity.applicationContext
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        AppUtils.logger("onDetachedFromActivityForConfigChanges()")
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        instance = this
+        AppUtils.logger("onReattachedToActivityForConfigChanges()")
         this.activity = binding.activity
         this.context = binding.activity.applicationContext
     }
 
-    override fun onDetachedFromActivity() {}
+    override fun onDetachedFromActivity() {
+        AppUtils.logger("onDetachedFromActivity()")
+    }
 
+    fun isMainActivityKilled(): Boolean {
+        if (activity == null || activity!!.isDestroyed || activity!!.isFinishing) {
+            AppUtils.logger(
+                "activity == null:" + (activity == null) + ",isDestroyed:" + (activity?.isDestroyed) + ",isFinishing:" + (activity?.isFinishing)
+            )
+            return true
+        }
+        AppUtils.logger( "activity ====== is alive ======")
+        return false
+    }
 
     class EventCallbackHandler : EventChannel.StreamHandler {
 
