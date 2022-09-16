@@ -105,6 +105,9 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
         val callkitNotificationManager = CallkitNotificationManager(context)
         val action = intent.action ?: return
         val data = intent.extras?.getBundle(EXTRA_CALLKIT_INCOMING_DATA) ?: return
+        AppUtils.logger(
+            "广播收到的 action：$action, detect:${AppUtils.isFlutterAppKilled()}"
+        )
         when (action) {
             ACTION_CALL_INCOMING -> {
                 try {
@@ -142,11 +145,13 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                         WorkManager.getInstance(context).cancelAllWork()
                     }
+                    AppUtils.logger("ACTION_CALL_ACCEPT")
                     sendEventFlutter(ACTION_CALL_ACCEPT, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     callkitNotificationManager.clearIncomingNotification(data)
                     addCall(context, Data.fromBundle(data), true)
                 } catch (error: Exception) {
+                    AppUtils.logger("ACTION_CALL_ACCEPT", error)
                     error.printStackTrace()
                 }
             }
@@ -155,11 +160,16 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                         WorkManager.getInstance(context).cancelAllWork()
                     }
+                    AppUtils.logger("ACTION_CALL_DECLINE")
+                    if (!AppUtils.isApplicationForeground(context) && AppUtils.isFlutterAppKilled()) {
+                        sendSpecificEvent(ACTION_CALL_DECLINE, data)
+                    }
                     sendEventFlutter(ACTION_CALL_DECLINE, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     callkitNotificationManager.clearIncomingNotification(data)
                     removeCall(context, Data.fromBundle(data))
                 } catch (error: Exception) {
+                    AppUtils.logger("ACTION_CALL_DECLINE", error)
                     error.printStackTrace()
                 }
             }
@@ -168,11 +178,16 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                         WorkManager.getInstance(context).cancelAllWork()
                     }
+                    AppUtils.logger("ACTION_CALL_ENDED")
+                    if (!AppUtils.isApplicationForeground(context) && AppUtils.isFlutterAppKilled()) {
+                        sendSpecificEvent(ACTION_CALL_ENDED, data)
+                    }
                     sendEventFlutter(ACTION_CALL_ENDED, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     callkitNotificationManager.clearIncomingNotification(data)
                     removeCall(context, Data.fromBundle(data))
                 } catch (error: Exception) {
+                    AppUtils.logger("ACTION_CALL_ENDED", error)
                     error.printStackTrace()
                 }
             }
@@ -230,5 +245,31 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                 "android" to android
         )
         FlutterCallkitIncomingPlugin.sendEvent(event, forwardData)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun sendSpecificEvent(event: String, data: Bundle) {
+        val android = mapOf(
+            "isCustomNotification" to data.getBoolean(EXTRA_CALLKIT_IS_CUSTOM_NOTIFICATION, false),
+            "ringtonePath" to data.getString(EXTRA_CALLKIT_RINGTONE_PATH, ""),
+            "backgroundColor" to data.getString(EXTRA_CALLKIT_BACKGROUND_COLOR, ""),
+            "backgroundUrl" to data.getString(EXTRA_CALLKIT_BACKGROUND_URL, ""),
+            "actionColor" to data.getString(EXTRA_CALLKIT_ACTION_COLOR, "")
+        )
+        val forwardData = mapOf(
+            "id" to data.getString(EXTRA_CALLKIT_ID, ""),
+            "nameCaller" to data.getString(EXTRA_CALLKIT_NAME_CALLER, ""),
+            "avatar" to data.getString(EXTRA_CALLKIT_AVATAR, ""),
+            "number" to data.getString(EXTRA_CALLKIT_HANDLE, ""),
+            "type" to data.getInt(EXTRA_CALLKIT_TYPE, 0),
+            "duration" to data.getLong(EXTRA_CALLKIT_DURATION, 0L),
+            "textAccept" to data.getString(EXTRA_CALLKIT_TEXT_ACCEPT, ""),
+            "textDecline" to data.getString(EXTRA_CALLKIT_TEXT_DECLINE, ""),
+            "textMissedCall" to data.getString(EXTRA_CALLKIT_TEXT_MISSED_CALL, ""),
+            "textCallback" to data.getString(EXTRA_CALLKIT_TEXT_CALLBACK, ""),
+            "extra" to data.getSerializable(EXTRA_CALLKIT_EXTRA) as HashMap<String, Any?>,
+            "android" to android
+        )
+        FlutterCallkitIncomingPlugin.sendSpecificEvent(event, forwardData)
     }
 }

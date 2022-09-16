@@ -16,6 +16,7 @@
             android:showOnLockScreen="true"
             android:launchMode="singleTask"
             android:exported="true"
+            android:process="co.airhost.flutter_callkit_incoming"
             android:theme="@style/CallkitIncomingTheme">
             <intent-filter>
                 <action android:name="com.hiennv.flutter_callkit_incoming.ACTION_CALL_INCOMING" />
