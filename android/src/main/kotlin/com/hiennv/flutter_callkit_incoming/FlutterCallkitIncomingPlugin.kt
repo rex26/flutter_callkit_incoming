@@ -78,6 +78,7 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         this.context = flutterPluginBinding.applicationContext
+        CallkitIncomingActivity.appContext = flutterPluginBinding.applicationContext
         callkitNotificationManager = CallkitNotificationManager(flutterPluginBinding.applicationContext)
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_callkit_incoming")
         channel?.setMethodCallHandler(this)

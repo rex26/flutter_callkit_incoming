@@ -50,12 +50,12 @@ import com.hiennv.flutter_callkit_incoming.CallkitIncomingBroadcastReceiver.Comp
 class CallkitIncomingActivity : Activity() {
 
     companion object {
-
+        lateinit var appContext: Context;
         const val ACTION_ENDED_CALL_INCOMING =
             "com.hiennv.flutter_callkit_incoming.ACTION_ENDED_CALL_INCOMING"
 
         fun getIntent(data: Bundle) = Intent(ACTION_CALL_INCOMING).apply {
-            action = ACTION_CALL_INCOMING
+            action =appContext.packageName +"."+ ACTION_CALL_INCOMING
             putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
             flags =
                 Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT

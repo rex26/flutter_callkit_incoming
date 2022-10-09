@@ -58,43 +58,43 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
 
         fun getIntentIncoming(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_INCOMING
+                    action = context.packageName+"."+ ACTION_CALL_INCOMING
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentStart(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_START
+                    action =  context.packageName+"."+ACTION_CALL_START
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentAccept(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_ACCEPT
+                    action =  context.packageName+"."+ACTION_CALL_ACCEPT
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentDecline(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_DECLINE
+                    action = context.packageName+"."+ ACTION_CALL_DECLINE
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentEnded(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_ENDED
+                    action = context.packageName+"."+ ACTION_CALL_ENDED
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentTimeout(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_TIMEOUT
+                    action = context.packageName+"."+ ACTION_CALL_TIMEOUT
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
 
         fun getIntentCallback(context: Context, data: Bundle?) =
                 Intent(context, CallkitIncomingBroadcastReceiver::class.java).apply {
-                    action = ACTION_CALL_CALLBACK
+                    action = context.packageName+"."+ ACTION_CALL_CALLBACK
                     putExtra(EXTRA_CALLKIT_INCOMING_DATA, data)
                 }
     }
@@ -108,7 +108,7 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
         AppUtils.logger(
             "广播收到的 action：$action, detect:${AppUtils.isFlutterAppKilled()}"
         )
-        when (action) {
+        when (action.removePrefix(context.packageName+".")) {
             ACTION_CALL_INCOMING -> {
                 try {
                     callkitNotificationManager.showIncomingNotification(data)
