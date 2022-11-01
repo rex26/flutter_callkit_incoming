@@ -49,6 +49,20 @@ class CallManager: NSObject {
         self.requestCall(callTransaction, action: "endCall")
     }
     
+    func answerCall(){
+        
+        calls.forEach { aCall in
+            if(aCall.uuid != calls.first?.uuid){
+                endCall(call: aCall)
+            }
+        }
+        
+        let answerCallAction = CXAnswerCallAction(call: calls.first!.uuid)
+        let callTransaction = CXTransaction()
+        callTransaction.addAction(answerCallAction)
+        self.requestCall(callTransaction, action: "answerCall")
+    }
+    
     func endCallAlls() {
         let calls = callController.callObserver.calls
         for call in calls {
@@ -152,6 +166,6 @@ class CallManager: NSObject {
     private func postCallNotification(){
         NotificationCenter.default.post(name: type(of: self).callsChangedNotification, object: self)
     }
-    
-    
+
+
 }
