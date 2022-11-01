@@ -90,6 +90,13 @@ class FlutterCallkitIncoming {
     return await _channel.invokeMethod("getDevicePushTokenVoIP");
   }
 
+  ///
+  /// On iOS: requestTransaction CXAnswerCallAction
+  /// On Android: Do nothing
+  static Future answerCallAction() async {
+    return await _channel.invokeMethod("answerCallAction");
+  }
+
   static CallEvent? _receiveCallEvent(dynamic data) {
     var event = "";
     dynamic body = {};
