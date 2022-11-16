@@ -145,7 +145,7 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                         WorkManager.getInstance(context).cancelAllWork()
                     }
-                    AppUtils.logger("ACTION_CALL_ACCEPT")
+                    AppUtils.logger("ACTION_CALL_ACCEPT SendEvent")
                     sendEventFlutter(ACTION_CALL_ACCEPT, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     callkitNotificationManager.clearIncomingNotification(data)

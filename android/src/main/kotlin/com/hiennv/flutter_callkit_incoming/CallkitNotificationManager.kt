@@ -355,6 +355,7 @@ class CallkitNotificationManager(private val context: Context) {
         val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.cloneFilter()
         intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (intent != null) {
+            AppUtils.logger("ACTION_CALL_ACCEPT getAcceptPendingIntent - getActivities()")
             val intentTransparent = TransparentActivity.getIntentAccept(context, data)
             return PendingIntent.getActivities(
                     context,
@@ -363,6 +364,7 @@ class CallkitNotificationManager(private val context: Context) {
                     getFlagPendingIntent()
             )
         } else {
+            AppUtils.logger("ACTION_CALL_ACCEPT getAcceptPendingIntent - getBroadcast()")
             val acceptIntent = CallkitIncomingBroadcastReceiver.getIntentAccept(context, data)
             return PendingIntent.getBroadcast(
                     context,
