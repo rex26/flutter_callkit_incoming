@@ -255,6 +255,7 @@ class CallkitIncomingActivity : Activity() {
         animateAcceptCall()
 
         ivAcceptCall.setOnClickListener {
+            AppUtils.logger("ACTION_CALL_ACCEPT Clicked ivAcceptCall")
             onAcceptClick()
         }
         ivDeclineCall.setOnClickListener {
@@ -278,9 +279,11 @@ class CallkitIncomingActivity : Activity() {
             intent?.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         if (intent != null) {
+            AppUtils.logger("ACTION_CALL_ACCEPT onAcceptClick - startActivities()")
             val intentTransparent = TransparentActivity.getIntentAccept(this@CallkitIncomingActivity, data)
             startActivities(arrayOf(intent, intentTransparent))
         } else {
+            AppUtils.logger("ACTION_CALL_ACCEPT onAcceptClick - sendBroadcast()")
             val acceptIntent = CallkitIncomingBroadcastReceiver.getIntentAccept(this@CallkitIncomingActivity, data)
             sendBroadcast(acceptIntent)
         }

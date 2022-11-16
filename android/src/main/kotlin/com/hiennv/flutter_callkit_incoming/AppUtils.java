@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.util.List;
 
-class AppUtils {
+public class AppUtils {
     /**
      * 提交代码后，设置为false
      */
