@@ -6,10 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
-import com.hiennv.SoundPlayerWorker
 
 class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
 
@@ -114,26 +110,15 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
                     callkitNotificationManager.showIncomingNotification(data)
                     sendEventFlutter(ACTION_CALL_INCOMING, data)
                     addCall(context, Data.fromBundle(data))
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        val request = OneTimeWorkRequestBuilder<SoundPlayerWorker>()
-                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                            .setInputData(androidx.work.Data.Builder().putString(EXTRA_CALLKIT_RINGTONE_PATH,data.getString(EXTRA_CALLKIT_RINGTONE_PATH)).build())
-                            .build()
-                        WorkManager.getInstance(context).enqueue(request)
-                    }else{
-                        val soundPlayerServiceIntent = Intent(context, CallkitSoundPlayerService::class.java)
-                        soundPlayerServiceIntent.putExtras(data)
-                        context.startService(soundPlayerServiceIntent)
-                    }
+                    val soundPlayerServiceIntent = Intent(context, CallkitSoundPlayerService::class.java)
+                    soundPlayerServiceIntent.putExtras(data)
+                    context.startService(soundPlayerServiceIntent)
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
             }
             ACTION_CALL_START -> {
                 try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        WorkManager.getInstance(context).cancelAllWork()
-                    }
                     sendEventFlutter(ACTION_CALL_START, data)
                     addCall(context, Data.fromBundle(data), true)
                 } catch (error: Exception) {
@@ -142,10 +127,7 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
             }
             ACTION_CALL_ACCEPT -> {
                 try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        WorkManager.getInstance(context).cancelAllWork()
-                    }
-                    AppUtils.logger("ACTION_CALL_ACCEPT SendEvent")
+                    AppUtils.logger("ACTION_CALL_ACCEPT")
                     sendEventFlutter(ACTION_CALL_ACCEPT, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     callkitNotificationManager.clearIncomingNotification(data)
@@ -157,9 +139,6 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
             }
             ACTION_CALL_DECLINE -> {
                 try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        WorkManager.getInstance(context).cancelAllWork()
-                    }
                     AppUtils.logger("ACTION_CALL_DECLINE")
                     if (!AppUtils.isApplicationForeground(context) && AppUtils.isFlutterAppKilled()) {
                         sendSpecificEvent(ACTION_CALL_DECLINE, data)
@@ -175,9 +154,6 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
             }
             ACTION_CALL_ENDED -> {
                 try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        WorkManager.getInstance(context).cancelAllWork()
-                    }
                     AppUtils.logger("ACTION_CALL_ENDED")
                     if (!AppUtils.isApplicationForeground(context) && AppUtils.isFlutterAppKilled()) {
                         sendSpecificEvent(ACTION_CALL_ENDED, data)
@@ -193,9 +169,6 @@ class CallkitIncomingBroadcastReceiver : BroadcastReceiver() {
             }
             ACTION_CALL_TIMEOUT -> {
                 try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-                        WorkManager.getInstance(context).cancelAllWork()
-                    }
                     sendEventFlutter(ACTION_CALL_TIMEOUT, data)
                     context.stopService(Intent(context, CallkitSoundPlayerService::class.java))
                     if (data.getBoolean(EXTRA_CALLKIT_IS_SHOW_MISSED_CALL_NOTIFICATION, true)) {

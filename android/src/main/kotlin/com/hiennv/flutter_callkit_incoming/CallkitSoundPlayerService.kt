@@ -51,6 +51,8 @@ class CallkitSoundPlayerService : Service() {
             getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
         audioManager = this.getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager?.isSpeakerphoneOn = true
+        audioManager?.mode = AudioManager.MODE_RINGTONE
         when (audioManager?.ringerMode) {
             AudioManager.RINGER_MODE_SILENT -> {
             }
