@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:configChanges="navigation|orientation|screenSize|keyboard|keyboardHidden|fontScale|mnc|mcc"
             android:exported="false"
             android:theme="@style/TranslucentTheme"
             android:name="com.hiennv.flutter_callkit_incoming.TransparentActivity"/>

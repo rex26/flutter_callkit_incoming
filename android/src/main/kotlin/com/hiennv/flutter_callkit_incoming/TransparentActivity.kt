@@ -3,8 +3,8 @@ package com.hiennv.flutter_callkit_incoming
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 
 class TransparentActivity : Activity() {
 
@@ -38,8 +38,10 @@ class TransparentActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when (intent.getStringExtra("type")) {
+        val type = intent.getStringExtra("type")
+        when (type) {
             "ACCEPT" -> {
+                AppUtils.logger("ACTION_CALL_ACCEPT onCreate - sendBroadcast(ACCEPT)")
                 val data = intent.getBundleExtra("data")
                 val acceptIntent = CallkitIncomingBroadcastReceiver.getIntentAccept(this@TransparentActivity, data)
                 sendBroadcast(acceptIntent)
@@ -50,6 +52,7 @@ class TransparentActivity : Activity() {
                 sendBroadcast(acceptIntent)
             }
             else -> { // Note the block
+                AppUtils.logger("ACTION_CALL_ACCEPT onCreate - default - sendBroadcast($type)")
                 val data = intent.getBundleExtra("data")
                 val acceptIntent = CallkitIncomingBroadcastReceiver.getIntentAccept(this@TransparentActivity, data)
                 sendBroadcast(acceptIntent)
@@ -57,5 +60,10 @@ class TransparentActivity : Activity() {
         }
         finish()
         overridePendingTransition(0, 0)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        AppUtils.logger("ACTION_CALL_ACCEPT onConfigurationChanged - newConfig: $newConfig")
     }
 }
