@@ -9,6 +9,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -53,6 +55,7 @@ class CallkitIncomingActivity : Activity() {
         lateinit var appContext: Context;
         const val ACTION_ENDED_CALL_INCOMING =
             "com.hiennv.flutter_callkit_incoming.ACTION_ENDED_CALL_INCOMING"
+        const val STAFF_APP = "com.onestayapp.airhost_one_staff"
 
         fun getIntent(data: Bundle) = Intent(ACTION_CALL_INCOMING).apply {
             action =appContext.packageName +"."+ ACTION_CALL_INCOMING
@@ -108,6 +111,7 @@ class CallkitIncomingActivity : Activity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
         }
         transparentStatusAndNavigation()
+        setOrientation()
         setContentView(R.layout.activity_callkit_incoming)
         initView()
         incomingData(intent)
@@ -327,5 +331,18 @@ class CallkitIncomingActivity : Activity() {
 
     override fun onBackPressed() {}
 
+    private fun setOrientation() {
+        var isLandscape = false
+        if (STAFF_APP == packageName) {
+            isLandscape = AppUtils.isPad(this)
+            AppUtils.logger("isLandscape:$isLandscape")
+        }
+        requestedOrientation =
+            if (isLandscape) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        AppUtils.logger("ACTION_CALL_ACCEPT onConfigurationChanged - newConfig: $newConfig")
+    }
 }
